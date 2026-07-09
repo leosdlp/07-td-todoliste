@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pré-requis — TD noté Kubernetes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap');
+
+        body { font-family: 'Inter', sans-serif; }
+        .code-font { font-family: 'JetBrains Mono', monospace; }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        .nav-link { transition: color 0.2s; }
+        .nav-link:hover { color: #60a5fa; }
+
+        .box-objectif { border-left: 4px solid #3b82f6; background-color: #eff6ff; }
+        .box-concept { border-left: 4px solid #8b5cf6; background-color: #faf5ff; }
+        .box-tache { border-left: 4px solid #0ea5e9; background-color: #f0f9ff; }
+        .box-validation { border-left: 4px solid #10b981; background-color: #ecfdf5; }
+        .box-warning { border-left: 4px solid #ef4444; background-color: #fef2f2; }
+        .box-indice { border-left: 4px solid #64748b; background-color: #f8fafc; }
+        .box-tip { border-left: 4px solid #06b6d4; background-color: #ecfeff; }
+        .box-reflexion { border-left: 4px solid #f59e0b; background-color: #fffbeb; }
+
+        .section-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 9999px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+            margin-right: 1rem;
+        }
+
+        .os-tab {
+            cursor: pointer;
+            padding: 0.6rem 1.1rem;
+            border-radius: 0.5rem 0.5rem 0 0;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-bottom: 3px solid transparent;
+            transition: all 0.15s;
+        }
+        .os-tab.active {
+            background-color: #f8fafc;
+            border-bottom-color: #3b82f6;
+            color: #1e3a8a;
+        }
+        .os-tab:not(.active) {
+            color: #64748b;
+        }
+        .os-tab:not(.active):hover {
+            background-color: #f1f5f9;
+        }
+
+        details summary { cursor: pointer; user-select: none; }
+        details summary::-webkit-details-marker { display: none; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
+
+<!-- HEADER -->
+<header class="bg-slate-900 text-white shadow-xl sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto p-4 lg:p-5">
+        <div class="flex items-center gap-3 mb-3">
+            <i class="fa-solid fa-list-check text-3xl text-emerald-400"></i>
+            <div>
+                <h1 class="text-2xl font-bold">Pré-requis — TD noté Kubernetes</h1>
+                <p class="text-xs text-slate-400 mt-0.5">À faire AVANT le jour du TD · Compte ~30 min selon votre connexion</p>
+            </div>
+        </div>
+        <nav class="flex space-x-4 text-xs font-semibold overflow-x-auto pb-1 whitespace-nowrap">
+            <a href="#avertissement" class="nav-link text-red-400">0. Avant tout</a>
+            <a href="#docker" class="nav-link text-blue-400">1. Docker</a>
+            <a href="#k3d" class="nav-link text-purple-400">2. k3d</a>
+            <a href="#kubectl" class="nav-link text-green-400">3. kubectl</a>
+            <a href="#cluster" class="nav-link text-orange-400">4. Cluster TD</a>
+            <a href="#images" class="nav-link text-rose-400">5. Pré-tirage images</a>
+            <a href="#smoketest" class="nav-link text-emerald-400">6. Smoke test</a>
+            <a href="#troubleshoot" class="nav-link text-amber-400">7. Si ça coince</a>
+        </nav>
+    </div>
+</header>
+
+<main class="max-w-5xl mx-auto p-4 lg:p-6 mt-4 flex-grow space-y-16">
+
+    <!-- ============================================================ -->
+    <!-- AVERTISSEMENT                                                 -->
+    <!-- ============================================================ -->
+    <section id="avertissement" class="scroll-mt-32">
+        <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+            <h3 class="text-lg font-bold text-slate-800 mb-4"><i class="fa-solid fa-circle-check mr-2 text-emerald-500"></i>Checklist du jour J — vous devez pouvoir cocher tout ça</h3>
+            <div class="space-y-2 text-sm">
+                <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                    <i class="fa-regular fa-square text-slate-400 text-lg mt-0.5"></i>
+                    <div>
+                        <code class="code-font bg-gray-100 px-1 rounded">docker version</code> retourne un client <strong>et</strong> un serveur (daemon UP)
+                    </div>
+                </div>
+                <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                    <i class="fa-regular fa-square text-slate-400 text-lg mt-0.5"></i>
+                    <div>
+                        <code class="code-font bg-gray-100 px-1 rounded">k3d version</code> retourne une version (5.x ou supérieure)
+                    </div>
+                </div>
+                <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                    <i class="fa-regular fa-square text-slate-400 text-lg mt-0.5"></i>
+                    <div>
+                        <code class="code-font bg-gray-100 px-1 rounded">kubectl version --client</code> retourne une version
+                    </div>
+                </div>
+                <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                    <i class="fa-regular fa-square text-slate-400 text-lg mt-0.5"></i>
+                    <div>
+                        Un cluster <code class="code-font bg-gray-100 px-1 rounded">td-k8s</code> tourne, avec 3 nodes Ready et le port 8080 mappé
+                    </div>
+                </div>
+                <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                    <i class="fa-regular fa-square text-slate-400 text-lg mt-0.5"></i>
+                    <div>
+                        Les 3 images Docker Hub du TD sont déjà tirées localement
+                    </div>
+                </div>
+                <div class="flex items-start gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                    <i class="fa-regular fa-square text-slate-400 text-lg mt-0.5"></i>
+                    <div>
+                        Le smoke test (section 6) passe sans erreur
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- DOCKER                                                        -->
+    <!-- ============================================================ -->
+    <section id="docker" class="scroll-mt-32 border-t pt-10">
+        <div class="flex items-center mb-6">
+            <span class="section-badge bg-blue-600">1</span>
+            <h2 class="text-3xl font-bold text-slate-800">Docker</h2>
+        </div>
+
+        <div class="box-objectif p-5 rounded-xl shadow-sm mb-6">
+            <h3 class="font-bold text-blue-900 mb-2"><i class="fa-solid fa-bullseye mr-2"></i>Objectif</h3>
+            <p class="text-sm text-blue-900">Avoir un daemon Docker fonctionnel. k3d fait tourner k3s dans des conteneurs Docker : pas de Docker = pas de cluster.</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">1.1 — Vérifier d'abord si Docker est déjà là</h3>
+            <div class="bg-slate-800 rounded-lg p-3 code-font text-xs text-slate-300 mb-3">
+                <div class="text-green-400">docker version</div>
+            </div>
+            <p class="text-sm text-gray-700">Vous devez voir <strong>deux blocs</strong> (Client + Server). Si seul le Client apparaît avec une erreur "Cannot connect to the Docker daemon", démarrez Docker Desktop puis retestez.</p>
+            <div class="bg-slate-800 rounded-lg p-3 code-font text-xs text-slate-300 mt-3">
+                <div class="text-slate-500"># Test plus parlant : lancer un conteneur réel</div>
+                <div class="text-green-400">docker run --rm hello-world</div>
+                <div class="text-slate-500 mt-1"># Doit afficher "Hello from Docker!"</div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">1.2 — Installer Docker Desktop si absent</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm mb-4">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div class="font-bold text-blue-900 mb-2"><i class="fa-brands fa-windows mr-2"></i>Windows 10/11</div>
+                    <p class="text-blue-800 text-xs mb-2">Pré-requis : WSL 2 activé (PowerShell admin : <code class="code-font bg-blue-100 px-1 rounded">wsl --install</code>)</p>
+                    <a href="https://docs.docker.com/desktop/install/windows-install/" target="_blank" class="text-blue-700 underline text-xs">docs.docker.com — Windows installer</a>
+                </div>
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div class="font-bold text-blue-900 mb-2"><i class="fa-brands fa-apple mr-2"></i>macOS</div>
+                    <p class="text-blue-800 text-xs mb-2">Choisir la bonne archi : Apple Silicon (M1/M2/M3) ou Intel</p>
+                    <a href="https://docs.docker.com/desktop/install/mac-install/" target="_blank" class="text-blue-700 underline text-xs">docs.docker.com — macOS installer</a>
+                </div>
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div class="font-bold text-blue-900 mb-2"><i class="fa-brands fa-linux mr-2"></i>Linux</div>
+                    <p class="text-blue-800 text-xs mb-2">Docker Desktop OU Docker Engine selon distrib</p>
+                    <a href="https://docs.docker.com/engine/install/" target="_blank" class="text-blue-700 underline text-xs">docs.docker.com — Linux installer</a>
+                </div>
+            </div>
+
+            <div class="box-warning p-4 rounded-lg text-sm">
+                <i class="fa-solid fa-triangle-exclamation mr-2 text-red-600"></i>
+                <span class="text-red-900"><strong>Après installation Docker Desktop sous Windows :</strong> redémarrez votre PC. Sans redémarrage, WSL 2 n'est pas pleinement activé et Docker démarre en boucle.</span>
+            </div>
+        </div>
+
+        <div class="box-validation p-5 rounded-xl shadow-sm">
+            <h4 class="font-bold text-emerald-900 mb-2"><i class="fa-solid fa-circle-check mr-2"></i>Validation</h4>
+            <div class="bg-slate-800 rounded-lg p-3 code-font text-xs text-slate-300">
+                <div class="text-green-400">docker version</div>
+                <div class="text-green-400">docker run --rm hello-world</div>
+            </div>
+            <p class="text-xs text-emerald-800 mt-2">Les deux doivent fonctionner sans erreur.</p>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- K3D                                                           -->
+    <!-- ============================================================ -->
+    <section id="k3d" class="scroll-mt-32 border-t pt-10">
+        <div class="flex items-center mb-6">
+            <span class="section-badge bg-purple-600">2</span>
+            <h2 class="text-3xl font-bold text-slate-800">k3d</h2>
+        </div>
+
+        <div class="box-objectif p-5 rounded-xl shadow-sm mb-6">
+            <h3 class="font-bold text-blue-900 mb-2"><i class="fa-solid fa-bullseye mr-2"></i>Objectif</h3>
+            <p class="text-sm text-blue-900">Installer la CLI <code class="code-font bg-blue-100 px-1 rounded">k3d</code> qui crée et gère vos clusters Kubernetes locaux à partir d'images Docker.</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">2.1 — Vérifier si k3d est déjà installé</h3>
+            <div class="bg-slate-800 rounded-lg p-3 code-font text-xs text-slate-300">
+                <div class="text-green-400">k3d version</div>
+                <div class="text-slate-500 mt-1"># Attendu : k3d version v5.x.x</div>
+            </div>
+            <p class="text-sm text-gray-700 mt-3">Si la commande est introuvable, installez via l'une des méthodes ci-dessous selon votre OS.</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">2.2 — Installation par OS</h3>
+
+            <div class="space-y-4">
+                <div>
+                    <div class="font-bold text-slate-700 mb-2"><i class="fa-brands fa-windows mr-2 text-blue-500"></i>Windows (PowerShell)</div>
+                    <div class="bg-slate-800 rounded-lg p-3 code-font text-xs text-slate-300">
+                        <div class="text-slate-500"># Option A — winget (Windows 10+)</div>
+                        <div class="text-green-400">winget install k3d-io.k3d</div>
+                        <div class="text-slate-500 mt-2"># Option B — Chocolatey si vous l'utilisez déjà</div>
+                        <div class="text-green-400">choco install k3d</div>
+                        <div class="text-slate-500 mt-2"># Option C — Scoop</div>
+                        <div class="text-green-400">scoop install k3d</div>
+                    </div>
+                    <p class="text-xs text-slate-600 mt-2">Après installation, <strong>fermez et rouvrez votre terminal</strong> pour que le PATH soit rechargé.</p>
+                </div>
+
+                <div>
+                    <div class="font-bold text-slate-700 mb-2"><i class="fa-brands fa-apple mr-2 text-slate-500"></i>macOS</div>
+                    <div class="bg-slate-800 rounded-lg p-3 code-font text-xs text-slate-300">
+                        <div class="text-green-400">brew install k3d</div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="font-bold text-slate-700 mb-2"><i class="fa-brands fa-linux mr-2 text-amber-600"></i>Linux</div>
+                    <div class="bg-slate-800 rounded-lg p-3 code-font text-xs text-slate-300">
+                        <div class="text-green-400">curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="box-validation p-5 rounded-xl shadow-sm">
+            <h4 class="font-bold text-emerald-900 mb-2"><i class="fa-solid fa-circle-check mr-2"></i>Validation</h4>
+            <div class="bg-slate-800 rounded-lg p-3 code-font text-xs text-slate-300">
+                <div class="text-green-400">k3d version</div>
+                <div class="text-slate-500 mt-1"># Doit afficher une version (5.x ou supérieure)</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- KUBECTL                                                       -->
+    <!-- ============================================================ -->
+    <section id="kubectl" class="scroll-mt-32 border-t pt-10">
+        <div class="flex items-center mb-6">
+            <span class="section-badge bg-green-600">3</span>
+            <h2 class="text-3xl font-bold text-slate-800">kubectl</h2>
+        </div>
+
+        <div class="box-objectif p-5 rounded-xl shadow-sm mb-6">
+            <h3 class="font-bold text-blue-900 mb-2"><i class="fa-solid fa-bullseye mr-2"></i>Objectif</h3>
+            <p class="text-sm text-blue-900">Avoir <code class="code-font bg-blue-100 px-1 rounded">kubectl</code>, la CLI de Kubernetes, accessible depuis votre terminal. <strong>Docker Desktop l'installe souvent automatiquement</strong> — testez d'abord avant d'installer manuellement.</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">3.1 — Vérifier si kubectl est déjà là</h3>
+            <div class="bg-slate-800 rounded-lg p-3 code-font text-xs text-slate-300">
+                <div class="text-green-400">kubectl version --client</div>
+                <div class="text-slate-500 mt-1"># Attendu : Client Version: vX.Y.Z</div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">3.2 — Si absent, installer</h3>
+
+            <div class="space-y-4">
+                <div>
+                    <div class="font-bold text-slate-700 mb-2"><i class="fa-brands fa-windows mr-2 text-blue-500"></i>Windows (PowerShell)</div>
+                    <div class="bg-slate-800 rounded-lg p-3 code-font text-xs text-slate-300">
+                        <div class="text-green-400">winget install Kubernetes.kubectl</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="font-bold text-slate-700 mb-2"><i class="fa-brands fa-apple mr-2 text-slate-500"></i>macOS</div>
+                    <div class="bg-slate-800 rounded-lg p-3 code-font text-xs text-slate-300">
+                        <div class="text-green-400">brew install kubectl</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="font-bold text-slate-700 mb-2"><i class="fa-brands fa-linux mr-2 text-amber-600"></i>Linux (méthode officielle)</div>
+                    <p class="text-xs text-slate-600 mb-2">Voir <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/" target="_blank" class="text-blue-600 underline">kubernetes.io — install kubectl linux</a></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="box-validation p-5 rounded-xl shadow-sm">
+            <h4 class="font-bold text-emerald-900 mb-2"><i class="fa-solid fa-circle-check mr-2"></i>Validation</h4>
+            <div class="bg-slate-800 rounded-lg p-3 code-font text-xs text-slate-300">
+                <div class="text-green-400">kubectl version --client</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- CLUSTER                                                       -->
+    <!-- ============================================================ -->
+    <section id="cluster" class="scroll-mt-32 border-t pt-10">
+        <div class="flex items-center mb-6">
+            <span class="section-badge bg-orange-500">4</span>
+            <h2 class="text-3xl font-bold text-slate-800">Création du cluster du TD</h2>
+        </div>
+
+        <div class="box-objectif p-5 rounded-xl shadow-sm mb-6">
+            <h3 class="font-bold text-blue-900 mb-2"><i class="fa-solid fa-bullseye mr-2"></i>Objectif</h3>
+            <p class="text-sm text-blue-900">Créer un cluster <code class="code-font bg-blue-100 px-1 rounded">td-k8s</code> avec <strong>le mapping de port 8080:80</strong> qui rendra l'application accessible sur <code class="code-font bg-blue-100 px-1 rounded">http://localhost:8080</code>.</p>
+        </div>
+
+        <div class="box-warning p-5 rounded-xl shadow-sm mb-6">
+            <h3 class="font-bold text-red-900 mb-2"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Le flag <code class="code-font bg-red-100 px-1 rounded">--port</code> est obligatoire</h3>
+            <p class="text-sm text-red-900">Si vous oubliez <code class="code-font bg-red-100 px-1 rounded">--port "8080:80@loadbalancer"</code> à la création, votre Service LoadBalancer sera <strong>injoignable depuis le navigateur</strong>, même avec une External IP affichée. Il n'y a pas de moyen simple d'ajouter ce mapping après coup : il faut détruire et recréer le cluster.</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">4.1 — Nettoyer un éventuel ancien cluster</h3>
+            <div class="bg-slate-800 rounded-lg p-3 code-font text-xs text-slate-300">
+                <div class="text-slate-500"># Lister les clusters existants</div>
+                <div class="text-green-400">k3d cluster list</div>
+                <div class="text-slate-500 mt-2"># Supprimer un cluster nommé td-k8s s'il existe</div>
+                <div class="text-green-400">k3d cluster delete td-k8s</div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">4.2 — Créer le cluster du TD</h3>
+            <div class="bg-slate-800 rounded-lg p-4 code-font text-xs text-slate-300">
+<pre class="text-green-300 whitespace-pre">k3d cluster create td-k8s \
+  --servers 1 --agents 2 \
+  --port "8080:80@loadbalancer" \
+  --k3s-arg "--disable=traefik@server:0"</pre>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 text-sm">
+                <div class="box-concept p-3 rounded-lg">
+                    <div class="font-bold text-purple-900 mb-1"><i class="fa-solid fa-circle-info mr-1"></i>Décryptage des flags</div>
+                    <ul class="text-purple-900 space-y-1 text-xs">
+                        <li><code class="code-font bg-purple-100 px-1 rounded">--servers 1</code> : 1 nœud control-plane</li>
+                        <li><code class="code-font bg-purple-100 px-1 rounded">--agents 2</code> : 2 workers</li>
+                        <li><code class="code-font bg-purple-100 px-1 rounded">--port</code> : expose le port 80 du LB k3d sur le 8080 de votre PC</li>
+                        <li><code class="code-font bg-purple-100 px-1 rounded">--k3s-arg "--disable=traefik..."</code> : désactive l'Ingress par défaut (inutile pour ce TD)</li>
+                    </ul>
+                </div>
+                <div class="box-indice p-3 rounded-lg">
+                    <div class="font-bold text-slate-700 mb-1"><i class="fa-solid fa-windows mr-1"></i>Sur PowerShell Windows</div>
+                    <p class="text-slate-700 text-xs">Le <code class="code-font bg-slate-200 px-1 rounded">\</code> de fin de ligne ne fonctionne pas. Mettez la commande sur <strong>une seule ligne</strong>, ou utilisez le backtick <code class="code-font bg-slate-200 px-1 rounded">`</code> comme caractère de continuation PowerShell.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="box-validation p-5 rounded-xl shadow-sm">
+            <h4 class="font-bold text-emerald-900 mb-2"><i class="fa-solid fa-circle-check mr-2"></i>Validation</h4>
+            <div class="bg-slate-800 rounded-lg p-3 code-font text-xs text-slate-300">
+                <div class="text-green-400">kubectl get nodes</div>
+                <div class="text-slate-500 mt-1"># Attendu : 3 noeuds en statut Ready (1 control-plane + 2 sans rôle)</div>
+                <div class="text-green-400 mt-2">docker ps --filter "name=k3d-td-k8s"</div>
+                <div class="text-slate-500 mt-1"># Attendu : 4 conteneurs (server + 2 agents + loadbalancer)</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- PRÉ-TIRAGE DES IMAGES                                         -->
+    <!-- ============================================================ -->
+    <section id="images" class="scroll-mt-32 border-t pt-10">
+        <div class="flex items-center mb-6">
+            <span class="section-badge bg-rose-600">5</span>
+            <h2 class="text-3xl font-bold text-slate-800">Pré-tirage des images Docker Hub</h2>
+        </div>
+
+        <div class="box-tip p-5 rounded-xl shadow-sm mb-6">
+            <h3 class="font-bold text-cyan-900 mb-2"><i class="fa-solid fa-stopwatch mr-2"></i>Pourquoi le faire à la maison</h3>
+            <p class="text-sm text-cyan-900">Le jour du TD, votre cluster k3d tirera ces images depuis Docker Hub la première fois que vous appliquerez les Deployments. Avec le wifi de la salle partagé entre 30 étudiants, ça peut prendre <strong>3 à 10 minutes</strong>. En tirant à la maison, vous transférez les images dans le cluster en quelques secondes.</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">5.1 — Tirer les images sur votre machine</h3>
+            <div class="bg-slate-800 rounded-lg p-4 code-font text-xs text-slate-300">
+<pre class="text-green-300 whitespace-pre">docker pull stephanparichon/epsi-k8s-bff:1.0
+docker pull stephanparichon/epsi-k8s-front:1.0
+docker pull stephanparichon/epsi-k8s-front:2.0</pre>
+            </div>
+            <p class="text-sm text-gray-700 mt-3">Compte ~200 Mo au total. Vérifiez ensuite :</p>
+            <div class="bg-slate-800 rounded-lg p-3 code-font text-xs text-slate-300 mt-1">
+                <div class="text-green-400">docker images | grep epsi-k8s</div>
+                <div class="text-slate-500 mt-1"># Attendu : 3 lignes (bff:1.0, front:1.0, front:2.0)</div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">5.2 — Importer les images dans le cluster k3d</h3>
+            <p class="text-sm text-gray-700 mb-3">Important : k3d a son <strong>propre registre interne</strong>. Tirer une image sur votre machine ne la rend pas disponible pour les pods. Il faut soit la laisser être tirée par le cluster au déploiement (long), soit l'importer manuellement (instantané) :</p>
+            <div class="bg-slate-800 rounded-lg p-4 code-font text-xs text-slate-300">
+<pre class="text-green-300 whitespace-pre">k3d image import \
+  stephanparichon/epsi-k8s-bff:1.0 \
+  stephanparichon/epsi-k8s-front:1.0 \
+  stephanparichon/epsi-k8s-front:2.0 \
+  --cluster td-k8s</pre>
+            </div>
+            <p class="text-xs text-slate-600 mt-2">Sur PowerShell Windows : mettre la commande sur une seule ligne ou utiliser le backtick <code class="code-font bg-slate-100 px-1 rounded">`</code> à la place du <code class="code-font bg-slate-100 px-1 rounded">\</code>.</p>
+        </div>
+
+        <div class="box-validation p-5 rounded-xl shadow-sm">
+            <h4 class="font-bold text-emerald-900 mb-2"><i class="fa-solid fa-circle-check mr-2"></i>Validation</h4>
+            <div class="bg-slate-800 rounded-lg p-3 code-font text-xs text-slate-300">
+                <div class="text-slate-500"># Vérifier la présence des images dans un node k3d</div>
+                <div class="text-green-400">docker exec k3d-td-k8s-server-0 crictl images | grep epsi-k8s</div>
+                <div class="text-slate-500 mt-2"># Attendu : 3 lignes correspondant aux 3 images importées</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SMOKE TEST                                                    -->
+    <!-- ============================================================ -->
+    <section id="smoketest" class="scroll-mt-32 border-t pt-10">
+        <div class="flex items-center mb-6">
+            <span class="section-badge bg-emerald-600">6</span>
+            <h2 class="text-3xl font-bold text-slate-800">Smoke test final</h2>
+        </div>
+
+        <div class="box-objectif p-5 rounded-xl shadow-sm mb-6">
+            <h3 class="font-bold text-blue-900 mb-2"><i class="fa-solid fa-bullseye mr-2"></i>Objectif</h3>
+            <p class="text-sm text-blue-900">Déployer un nginx jetable pour valider <strong>de bout en bout</strong> que toute la chaîne fonctionne : Docker → k3d → cluster → pod → service → port mapping → navigateur.</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">6.1 — Déployer un nginx temporaire</h3>
+            <div class="bg-slate-800 rounded-lg p-3 code-font text-xs text-slate-300">
+                <div class="text-slate-500"># Créer un pod nginx</div>
+                <div class="text-green-400">kubectl run smoke-nginx --image=nginx:1.27-alpine --port=80 --labels="app=smoke"</div>
+                <div class="text-slate-500 mt-2"># Exposer le pod en LoadBalancer (utilise le port mapping 8080:80)</div>
+                <div class="text-green-400">kubectl expose pod smoke-nginx --type=LoadBalancer --port=80</div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">6.2 — Vérifier</h3>
+            <div class="bg-slate-800 rounded-lg p-3 code-font text-xs text-slate-300">
+                <div class="text-green-400">kubectl get pod,svc</div>
+                <div class="text-slate-500 mt-1"># Attendu : pod smoke-nginx en Running 1/1, service en LoadBalancer</div>
+            </div>
+            <p class="text-sm text-gray-700 mt-3">Ouvrez ensuite <a href="http://localhost:8080" target="_blank" class="text-blue-600 underline code-font">http://localhost:8080</a> dans votre navigateur — la page <strong>"Welcome to nginx!"</strong> doit s'afficher.</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">6.3 — Nettoyer le smoke test</h3>
+            <div class="bg-slate-800 rounded-lg p-3 code-font text-xs text-slate-300">
+                <div class="text-green-400">kubectl delete pod smoke-nginx</div>
+                <div class="text-green-400">kubectl delete svc smoke-nginx</div>
+            </div>
+            <p class="text-sm text-gray-700 mt-2">Le cluster reste prêt pour le jour du TD.</p>
+        </div>
+
+        <div class="box-validation p-5 rounded-xl shadow-sm">
+            <h4 class="font-bold text-emerald-900 mb-2"><i class="fa-solid fa-circle-check mr-2"></i>Si la page nginx s'est affichée sur localhost:8080</h4>
+            <p class="text-sm text-emerald-900">Votre environnement est <strong>100% prêt pour le TD</strong>. Ne touchez plus à rien — gardez le cluster en place ou supprimez-le et recréez-le le jour J avec la même commande.</p>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- TROUBLESHOOT                                                  -->
+    <!-- ============================================================ -->
+    <section id="troubleshoot" class="scroll-mt-32 border-t pt-10">
+        <div class="flex items-center mb-6">
+            <span class="section-badge bg-amber-500">7</span>
+            <h2 class="text-3xl font-bold text-slate-800">Si ça coince</h2>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+            <div class="space-y-4">
+
+                <details class="border border-slate-200 rounded-lg overflow-hidden">
+                    <summary class="bg-slate-50 px-4 py-3 font-semibold text-slate-800 hover:bg-slate-100 flex items-center">
+                        <i class="fa-solid fa-chevron-right mr-2 text-slate-400 text-xs"></i>
+                        Docker Desktop ne démarre pas, tourne en boucle
+                    </summary>
+                    <div class="p-4 text-sm text-slate-700 space-y-2">
+                        <p>1. Vérifier WSL 2 (Windows) : <code class="code-font bg-slate-100 px-1 rounded">wsl --status</code> doit afficher "Version par défaut : 2"</p>
+                        <p>2. Si WSL 2 inactif : ouvrir PowerShell en admin et lancer <code class="code-font bg-slate-100 px-1 rounded">wsl --install</code>, puis redémarrer le PC</p>
+                        <p>3. Vérifier que la <strong>virtualisation est activée dans le BIOS/UEFI</strong> (VT-x ou AMD-V)</p>
+                        <p>4. Vérifier que <strong>Hyper-V</strong> est activé (Fonctionnalités Windows)</p>
+                    </div>
+                </details>
+
+                <details class="border border-slate-200 rounded-lg overflow-hidden">
+                    <summary class="bg-slate-50 px-4 py-3 font-semibold text-slate-800 hover:bg-slate-100 flex items-center">
+                        <i class="fa-solid fa-chevron-right mr-2 text-slate-400 text-xs"></i>
+                        k3d cluster create échoue : "port already allocated" sur 8080
+                    </summary>
+                    <div class="p-4 text-sm text-slate-700 space-y-2">
+                        <p>Une autre application utilise déjà le port 8080. Identifiez-la :</p>
+                        <div class="bg-slate-800 rounded p-2 code-font text-xs text-slate-300">
+                            <div class="text-green-400">netstat -ano | findstr :8080</div>
+                            <div class="text-slate-500 mt-1"># sous Linux/macOS : lsof -i :8080</div>
+                        </div>
+                        <p>Solution : fermer l'application coupable, OU créer le cluster sur un autre port local :</p>
+                        <div class="bg-slate-800 rounded p-2 code-font text-xs text-slate-300">
+                            <div class="text-green-400">--port "9090:80@loadbalancer"</div>
+                            <div class="text-slate-500"># L'app sera alors sur http://localhost:9090</div>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="border border-slate-200 rounded-lg overflow-hidden">
+                    <summary class="bg-slate-50 px-4 py-3 font-semibold text-slate-800 hover:bg-slate-100 flex items-center">
+                        <i class="fa-solid fa-chevron-right mr-2 text-slate-400 text-xs"></i>
+                        k3d cluster create échoue avec "no space left on device"
+                    </summary>
+                    <div class="p-4 text-sm text-slate-700 space-y-2">
+                        <p>Docker Desktop a sa propre allocation disque. Augmentez-la dans Settings → Resources → Disk image size (passer à 64 Go par exemple).</p>
+                        <p>Nettoyer le cache Docker avant si nécessaire :</p>
+                        <div class="bg-slate-800 rounded p-2 code-font text-xs text-slate-300">
+                            <div class="text-green-400">docker system prune -a</div>
+                            <div class="text-slate-500"># Supprime tous les conteneurs arrêtés, images non utilisées, etc.</div>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="border border-slate-200 rounded-lg overflow-hidden">
+                    <summary class="bg-slate-50 px-4 py-3 font-semibold text-slate-800 hover:bg-slate-100 flex items-center">
+                        <i class="fa-solid fa-chevron-right mr-2 text-slate-400 text-xs"></i>
+                        kubectl get nodes : "The connection to the server was refused"
+                    </summary>
+                    <div class="p-4 text-sm text-slate-700 space-y-2">
+                        <p>kubectl ne sait pas vers quel cluster pointer. Vérifier les contextes :</p>
+                        <div class="bg-slate-800 rounded p-2 code-font text-xs text-slate-300">
+                            <div class="text-green-400">kubectl config get-contexts</div>
+                            <div class="text-green-400">kubectl config use-context k3d-td-k8s</div>
+                        </div>
+                        <p>Si le contexte <code class="code-font bg-slate-100 px-1 rounded">k3d-td-k8s</code> n'existe pas, le cluster n'a probablement pas été créé. Refaire la section 4.</p>
+                    </div>
+                </details>
+
+                <details class="border border-slate-200 rounded-lg overflow-hidden">
+                    <summary class="bg-slate-50 px-4 py-3 font-semibold text-slate-800 hover:bg-slate-100 flex items-center">
+                        <i class="fa-solid fa-chevron-right mr-2 text-slate-400 text-xs"></i>
+                        Smoke test : page nginx pas accessible sur localhost:8080
+                    </summary>
+                    <div class="p-4 text-sm text-slate-700 space-y-2">
+                        <p>1. Vérifier que le port mapping est bien actif :</p>
+                        <div class="bg-slate-800 rounded p-2 code-font text-xs text-slate-300">
+                            <div class="text-green-400">docker ps --filter "name=k3d-td-k8s-serverlb"</div>
+                            <div class="text-slate-500"># La colonne PORTS doit montrer 0.0.0.0:8080-&gt;80/tcp</div>
+                        </div>
+                        <p>2. Si pas de mapping → le cluster a été créé sans <code class="code-font bg-slate-100 px-1 rounded">--port</code>. Le détruire et le recréer (section 4).</p>
+                        <p>3. Vérifier que le Service a bien un type LoadBalancer et le selector correct :</p>
+                        <div class="bg-slate-800 rounded p-2 code-font text-xs text-slate-300">
+                            <div class="text-green-400">kubectl describe svc smoke-nginx</div>
+                            <div class="text-slate-500"># Endpoints doit lister l'IP du pod, pas être vide</div>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="border border-slate-200 rounded-lg overflow-hidden">
+                    <summary class="bg-slate-50 px-4 py-3 font-semibold text-slate-800 hover:bg-slate-100 flex items-center">
+                        <i class="fa-solid fa-chevron-right mr-2 text-slate-400 text-xs"></i>
+                        Docker pull : "toomanyrequests" ou "rate limit"
+                    </summary>
+                    <div class="p-4 text-sm text-slate-700 space-y-2">
+                        <p>Docker Hub limite les pulls anonymes (100 par 6h depuis votre IP publique). Solution :</p>
+                        <div class="bg-slate-800 rounded p-2 code-font text-xs text-slate-300">
+                            <div class="text-green-400">docker login</div>
+                            <div class="text-slate-500"># Compte Docker Hub gratuit suffit, limite passe à 200 par 6h</div>
+                        </div>
+                    </div>
+                </details>
+
+            </div>
+
+            <div class="box-tip p-4 rounded-xl shadow-sm mt-6">
+                <h4 class="font-bold text-cyan-900 mb-2"><i class="fa-solid fa-life-ring mr-2"></i>Toujours bloqué ?</h4>
+                <p class="text-sm text-cyan-900">Contactez l'enseignant <strong>avant le jour du TD</strong>, pas le matin même. Précisez : OS + version, sortie de <code class="code-font bg-cyan-100 px-1 rounded">docker version</code>, sortie de <code class="code-font bg-cyan-100 px-1 rounded">k3d cluster list</code>, et le message d'erreur exact.</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="bg-slate-900 text-slate-400 text-center text-xs py-6 mt-12">
+    EPSI 2025-2026
+</footer>
+
+</body>
+</html>
