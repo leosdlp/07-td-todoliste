@@ -1,0 +1,16 @@
+# ============================================================
+# ConfigMap frontend
+# Fournit au frontend l'adresse du Service backend dans le cluster.
+# Résolution DNS interne (même namespace "default") :
+#   <service> -> backend
+#   port du Service backend (voir service-back.yaml) -> 3000
+# ============================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  labels:
+    app: frontend
+data:
+  BACKEND_HOST: "backend"
+  BACKEND_PORT: "3000"
